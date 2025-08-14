@@ -1,0 +1,45 @@
+# experiments/configs/proof_of_concept.yaml
+
+# For reproducibility
+seed: 42
+
+# Define the base model and LoRA parameters
+model:
+  base_name: "bert-base-uncased"
+  lora_rank: 8
+  lora_alpha: 16
+  # For BERT, common target modules are query and value layers
+  target_modules: ["query", "value"]
+
+# List of tasks to train and merge
+# We'll use the datasets library names
+tasks:
+  - task_name: "sst2"
+    dataset_name: "glue"
+    dataset_config: "sst2"
+    text_column: "sentence"
+    label_column: "label"
+  - task_name: "mrpc"
+    dataset_name: "glue"
+    dataset_config: "mrpc"
+    text_column: ["sentence1", "sentence2"] # MRPC has two sentences
+    label_column: "label"
+  - task_name: "rte"
+    dataset_name: "glue"
+    dataset_config: "rte"
+    text_column: ["sentence1", "sentence2"]
+    label_column: "label"
+
+# OPCM merging parameters from your pseudo-code
+merging:
+  alpha_threshold: 0.5 # The projection threshold
+
+# Training parameters
+training:
+  output_dir: "models/"
+  num_epochs: 3
+  batch_size: 16
+  learning_rate: 2e-5
+
+# Set the device to run on (cuda, mps, or cpu)
+device: "cuda"
